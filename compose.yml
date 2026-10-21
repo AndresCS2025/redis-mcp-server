@@ -1,0 +1,38 @@
+services:
+  redis-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: redis-mcp-server:latest
+    container_name: redis-mcp-server
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - REDIS_URL=redis://redis-test:6379/0
+      - MCP_PORT=3000
+      - MCP_HOST=0.0.0.0
+      - REDIS_CONNECTION_TIMEOUT_MS=5000
+      - REDIS_COMMAND_TIMEOUT_MS=3000
+      - REDIS_MAX_SCAN_COUNT=100
+      - REDIS_MAX_RESULTS=100
+      - REDIS_MAX_VALUE_BYTES=65536
+      - REDIS_METADATA_ENABLED=true
+      - REDIS_METADATA_LEVEL=standard
+    depends_on:
+      redis-test:
+        condition: service_healthy
+
+  # Disposable local Redis container for testing and isolated verification
+  redis-test:
+    image: redis:7-alpine
+    container_name: redis-test-mcp
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 5

@@ -1,0 +1,6 @@
+# Code Owners for redis-mcp-server
+# Lines starting with '#' are comments.
+# Format: <path> <owners>
+#
+# To enable CODEOWNERS, uncomment and set your designated personal Git or maintainer team handle:
+# * @username-or-team
